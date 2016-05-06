@@ -86,11 +86,11 @@ class Texture
 	 *
 	 * Returns: True if loading was successful, false otherwise.
 	 */
-	bool loadFromFile(string filename, IntRect area = IntRect() )
+	bool loadFromFile(const(char)[] filename, IntRect area = IntRect() )
 	{
 		import dsfml.system.string;
 
-		bool ret = sfTexture_loadFromFile(sfPtr, toStringz(filename) ,area.left, area.top,area.width, area.height);
+		bool ret = sfTexture_loadFromFile(sfPtr, filename.ptr, filename.length,area.left, area.top,area.width, area.height);
 		if(!ret)
 		{
 			err.write(dsfml.system.string.toString(sfErr_getOutput()));
@@ -391,11 +391,6 @@ class Texture
 	{
 		sfTexture_updateFromRenderWindow(sfPtr, window.sfPtr, x, y);
 	}
-
-	static void flush()
-	{
-		sfTexture_flush();
-	}
 }
 
 unittest
@@ -467,7 +462,7 @@ sfTexture* sfTexture_construct();
 bool sfTexture_create(sfTexture* texture, uint width, uint height, bool oneChannel);
 
 //Create a new texture from a file
-bool sfTexture_loadFromFile(sfTexture* texture, const(char)* filename, int left, int top, int width, int height);
+bool sfTexture_loadFromFile(sfTexture* texture, const(char)* filename, size_t length, int left, int top, int width, int height);
 
 //Create a new texture from a file in memory
 bool sfTexture_loadFromMemory(sfTexture* texture, const(void)* data, size_t sizeInBytes, int left, int top, int width, int height);
@@ -519,7 +514,5 @@ void sfTexture_bind(const sfTexture* texture);
 
 //Get the maximum texture size allowed
 uint sfTexture_getMaximumSize();
-
-void  sfTexture_flush();
 
 const(char)* sfErr_getOutput();
