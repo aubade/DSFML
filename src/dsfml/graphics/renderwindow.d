@@ -74,7 +74,7 @@ class RenderWindow : Window, RenderTarget
 	}
 
 	//in order to envoke this constructor when using string literals, be sure to use the d suffix, i.e. "素晴らしい ！"d
-	this(T)(VideoMode mode, immutable(T)[] title, Style style = Style.DefaultStyle, ref const(ContextSettings) settings = ContextSettings.Default)
+	this(T)(VideoMode mode, const(T)[] title, Style style = Style.DefaultStyle, ref const(ContextSettings) settings = ContextSettings.Default)
 		if (is(T == dchar)||is(T == wchar)||is(T == char))
 	{
 
