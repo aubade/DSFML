@@ -262,11 +262,11 @@ class Texture
 	 *
 	 * Returns: True if creation was successful, false otherwise.
 	 */
-	bool create(uint width, uint height)
+	bool create(uint width, uint height, bool oneChannel = false)
 	{
 		import dsfml.system.string;
 
-		bool ret = sfTexture_create(sfPtr, width, height);
+		bool ret = sfTexture_create(sfPtr, width, height, oneChannel);
 		if(!ret)
 		{
 			err.write(dsfml.system.string.toString(sfErr_getOutput()));
@@ -402,10 +402,6 @@ unittest
 {
 	version(DSFML_Unittest_Graphics)
 	{
-		import std.stdio;
-
-		writeln("Unit test for Texture");
-
 		auto texture = new Texture();
 
 		assert(texture.loadFromFile("res/TestImage.png"));
@@ -468,7 +464,7 @@ private extern(C):
 sfTexture* sfTexture_construct();
 
 //Create a new texture
-bool sfTexture_create(sfTexture* texture, uint width, uint height);
+bool sfTexture_create(sfTexture* texture, uint width, uint height, bool oneChannel);
 
 //Create a new texture from a file
 bool sfTexture_loadFromFile(sfTexture* texture, const(char)* filename, int left, int top, int width, int height);
