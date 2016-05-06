@@ -43,22 +43,23 @@ final abstract class Joystick
 		uint index;
 		///Name of the joystick
 		@property dstring name() {
+			immutable(uint)[2] key = [vendorId, productId];
+
 			//In theory, each vid:pid combination should only have one name associated with it.
-			auto cachedName = [vendorId, productId] in nameCache;
+			auto cachedName = (key in nameCache);
 			if (cachedName !is null) {
 				return *cachedName;
 			} else {
 				import std.exception;
 
 				dchar[] retrievedName;
-
 				retrievedName.length = sfJoystick_getIdentificationNameLength(index);
-
 				sfJoystick_getIdentificationName(index, retrievedName.ptr);
+				dstring retval;
 
-				nameCache[[vendorId, productId]] = assumeUnique(retrievedName);
+				nameCache[key] = retval = assumeUnique(retrievedName);
 
-				return assumeUnique(retrievedName);
+				return retval;
 			}
 		}
 
@@ -134,7 +135,7 @@ final abstract class Joystick
 	///
 	///Returns: Structure containing the joystick information.
 	static Identification getIdentification(uint joystick) {
-		Identification identification;
+		Identification identification = Identification(joystick);
 
 		sfJoystick_getIdentification(joystick, &identification.vendorId, &identification.productId);
 
