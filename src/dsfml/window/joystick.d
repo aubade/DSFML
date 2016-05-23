@@ -46,15 +46,21 @@ final abstract class Joystick
 			immutable(uint)[2] key = [vendorId, productId];
 
 			//In theory, each vid:pid combination should only have one name associated with it.
-			auto cachedName = (key in nameCache);
-			if (cachedName !is null) {
+
+			dstring* cachedName = (key in nameCache);
+			if (cachedName !is null)
+			{
 				return *cachedName;
-			} else {
+			}
+			else
+			{
 				import std.exception;
 
 				dchar[] retrievedName;
+
 				retrievedName.length = sfJoystick_getIdentificationNameLength(index);
 				sfJoystick_getIdentificationName(index, retrievedName.ptr);
+
 				dstring retval;
 
 				nameCache[key] = retval = assumeUnique(retrievedName);

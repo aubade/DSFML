@@ -19,7 +19,6 @@
                         "targetType": "library",
                         "sourcePaths": ["src/dsfml/audio"],
                         "libs": [ "dsfmlc-audio" ],
-                        "dflags":["-m32mscoff"],
                         "dependencies":
                         {
                                 "dsfml:system": "~>2.3"
@@ -30,7 +29,6 @@
                         "targetType": "library",
                         "sourcePaths": ["src/dsfml/graphics"],
                         "libs": [ "dsfmlc-graphics" ],
-                        "dflags":["-m32mscoff"],
                         "dependencies":
                         {
                                 "dsfml:system": "~>2.3",
@@ -41,7 +39,6 @@
                         "name": "window",
                         "sourcePaths": ["src/dsfml/window"],
                         "libs": [ "dsfmlc-window" ],
-                        "dflags":["-m32mscoff"],
                         "dependencies":
                         {
                                 "dsfml:system": "~>2.3"
@@ -52,7 +49,6 @@
                         "targetType": "library",
                         "sourcePaths": ["src/dsfml/network"],
                         "libs": [ "dsfmlc-network" ],
-                        "dflags":["-m32mscoff"],
                         "dependencies":
                         {
                                 "dsfml:system": "~>2.3"
@@ -63,7 +59,6 @@
                         "targetType": "library",
                         "importPaths": ["src/"],
                         "sourcePaths": ["src/dsfml/system"],
-                        "dflags":["-m32mscoff"],
                         "libs": [ "dsfmlc-system" ]
                 }
         ]
