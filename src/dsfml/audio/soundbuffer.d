@@ -85,7 +85,7 @@ class SoundBuffer
 	{
 		if(sfSoundBuffer_getSampleCount(sfPtr) > 0)
 		{
-			return sfSoundBuffer_getSamples(sfPtr)[0 .. cast(size_t)min(sfSoundBuffer_getSampleCount(sfPtr), size_t.max)];
+			return sfSoundBuffer_getSamples(sfPtr)[0 .. sfSoundBuffer_getSampleCount(sfPtr)];
 		}
 		else
 		{
@@ -349,7 +349,7 @@ bool sfSoundBuffer_saveToFile(const sfSoundBuffer* soundBuffer, const char* file
 
 const(short)* sfSoundBuffer_getSamples(const sfSoundBuffer* soundBuffer);
 
-ulong sfSoundBuffer_getSampleCount(const sfSoundBuffer* soundBuffer);
+size_t sfSoundBuffer_getSampleCount(const sfSoundBuffer* soundBuffer);
 
 uint sfSoundBuffer_getSampleRate(const sfSoundBuffer* soundBuffer);
 
