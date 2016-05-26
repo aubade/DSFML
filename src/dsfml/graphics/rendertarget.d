@@ -171,17 +171,6 @@ interface RenderTarget
 	    // Then transform by the inverse of the view matrix
 		return view.getInverseTransform().transformPoint(normalized);
 	}
-	final Vector2f mapPixelToCoords(Vector2i point, View theView) inout
-	{
-	    // First, convert from viewport coordinates to homogeneous coordinates
-		Vector2f normalized;
-
-		normalized.x = -1.0 + 2.0 * (cast(float)point.x - theView.viewport.left) / theView.viewport.width;
-		normalized.y = -1.0 + 2.0 * (cast(float)point.y - theView.viewport.top) / theView.viewport.height;
-
-	    // Then transform by the inverse of the view matrix
-		return view.getInverseTransform().transformPoint(normalized);
-	}
 
 	/**
 	 * Convert a point from target coordinates to world coordinates, using the curtheView.view.
