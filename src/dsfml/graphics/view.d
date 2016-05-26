@@ -186,7 +186,7 @@ struct View
 	  See also
 	      getInverseTransform
 	*/
-
+	//We have both const and mutable overloads so when the object is mutable, we can lazily cache the transform.
 	Transform getTransform()
 	{
 		import std.math;

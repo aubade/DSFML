@@ -137,7 +137,8 @@ interface RenderTarget
 	 *
 	 * Returns: The converted point, in "world" coordinates.
 	 */
-	final Vector2f mapPixelToCoords(Vector2i point) const
+	//these methods are marked inout because const Views can't cache transforms.
+	final Vector2f mapPixelToCoords(Vector2i point) inout
 	{
 		return mapPixelToCoords(point, view);
 	}
@@ -159,7 +160,18 @@ interface RenderTarget
 	 *
 	 * Returns: The converted point, in "world" coordinates.
 	 */
-	final Vector2f mapPixelToCoords(Vector2i point, View theView) const
+	final Vector2f mapPixelToCoords(Vector2i point, View theView) inout
+	{
+	    // First, convert from viewport coordinates to homogeneous coordinates
+		Vector2f normalized;
+
+		normalized.x = -1.0 + 2.0 * (cast(float)point.x - theView.viewport.left) / theView.viewport.width;
+		normalized.y = -1.0 + 2.0 * (cast(float)point.y - theView.viewport.top) / theView.viewport.height;
+
+	    // Then transform by the inverse of the view matrix
+		return view.getInverseTransform().transformPoint(normalized);
+	}
+	final Vector2f mapPixelToCoords(Vector2i point, View theView) inout
 	{
 	    // First, convert from viewport coordinates to homogeneous coordinates
 		Vector2f normalized;
@@ -181,7 +193,7 @@ interface RenderTarget
 	 *
 	 * The converted point, in "world" coordinates
 	 */
-	final Vector2i mapCoordsToPixel(Vector2f point) const
+	final Vector2i mapCoordsToPixel(Vector2f point) inout
 	{
 		return mapCoordsToPixel(point, view);
 	}
@@ -201,7 +213,7 @@ interface RenderTarget
 	 *
 	 * Returns: The converted point, in target coordinates (pixels)
 	 */
-	final Vector2i mapCoordsToPixel(Vector2f point, View theView) const
+	final Vector2i mapCoordsToPixel(Vector2f point, View theView) inout
 	{
 		// First, transform the point by the view matrix
 		Vector2f normalized = theView.getTransform().transformPoint(point);
