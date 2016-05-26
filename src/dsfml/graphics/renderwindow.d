@@ -211,25 +211,6 @@ class RenderWindow : Window, RenderTarget
 	/**
 	 * Get the viewport of a view, applied to this render target.
 	 *
-	 * The viewport is defined in the view as a ratio, this function simply applies this ratio to the current dimensions of the render target to calculate the pixels rectangle that the viewport actually covers in the target.
-	 *
-	 * Params:
-	 * 		view	= The view for which we want to compute the viewport
-	 *
-	 * Returns: Viewport rectangle, expressed in pixels
-	 */
-	IntRect getViewport(const(View) view) const
-	{
-		IntRect temp;
-
-		sfRenderWindow_getViewport(sfPtr, view.sfPtr, &temp.left, &temp.top, &temp.width, &temp.height);
-
-		return temp;
-	}
-
-	/**
-	 * Get the viewport of a view, applied to this render target.
-	 *
 	 * A window is active only on the current thread, if you want to make it active on another thread you have to deactivate it on the previous thread first if it was active. Only one window can be active on a thread at a time, thus the window previously active (if any) automatically gets deactivated.
 	 *
 	 * Params:
@@ -540,94 +521,6 @@ class RenderWindow : Window, RenderTarget
 	}
 
 	/**
-	 * Convert a point fom target coordinates to world coordinates, using the current view.
-	 *
-	 * This function is an overload of the mapPixelToCoords function that implicitely uses the current view.
-	 *
-	 * Params:
-	 * 		point	= Pixel to convert
-	 *
-	 * Returns: The converted point, in "world" coordinates.
-	 */
-	Vector2f mapPixelToCoords(Vector2i point) const
-	{
-		Vector2f temp;
-
-		sfRenderWindow_mapPixelToCoords(sfPtr,point.x, point.y, &temp.x, &temp.y,null);
-
-		return temp;
-	}
-
-	/**
-	 * Convert a point from target coordinates to world coordinates.
-	 *
-	 * This function finds the 2D position that matches the given pixel of the render-target. In other words, it does the inverse of what the graphics card does, to find the initial position of a rendered pixel.
-	 *
-	 * Initially, both coordinate systems (world units and target pixels) match perfectly. But if you define a custom view or resize your render-target, this assertion is not true anymore, ie. a point located at (10, 50) in your render-target may map to the point (150, 75) in your 2D world – if the view is translated by (140, 25).
-	 *
-	 * For render-windows, this function is typically used to find which point (or object) is located below the mouse cursor.
-	 *
-	 * This version uses a custom view for calculations, see the other overload of the function if you want to use the current view of the render-target.
-	 *
-	 * Params:
-	 * 		point	= Pixel to convert
-	 * 		view	= The view to use for converting the point
-	 *
-	 * Returns: The converted point, in "world" coordinates.
-	 */
-	Vector2f mapPixelToCoords(Vector2i point, const(View) view) const
-	{
-		Vector2f temp;
-
-		sfRenderWindow_mapPixelToCoords(sfPtr,point.x, point.y, &temp.x, &temp.y,view.sfPtr);
-
-		return temp;
-	}
-
-	/**
-	 * Convert a point from target coordinates to world coordinates, using the current view.
-	 *
-	 * This function is an overload of the mapPixelToCoords function that implicitely uses the current view.
-	 *
-	 * Params:
-	 * 		point	= Point to convert
-	 *
-	 * The converted point, in "world" coordinates
-	 */
-	Vector2i mapCoordsToPixel(Vector2f point) const
-	{
-		Vector2i temp;
-
-		sfRenderWindow_mapCoordsToPixel(sfPtr,point.x, point.y, &temp.x, &temp.y,null);
-
-		return temp;
-	}
-
-	/**
-	 * Convert a point from world coordinates to target coordinates.
-	 *
-	 * This function finds the pixel of the render-target that matches the given 2D point. In other words, it goes through the same process as the graphics card, to compute the final position of a rendered point.
-	 *
-	 * Initially, both coordinate systems (world units and target pixels) match perfectly. But if you define a custom view or resize your render-target, this assertion is not true anymore, ie. a point located at (150, 75) in your 2D world may map to the pixel (10, 50) of your render-target – if the view is translated by (140, 25).
-	 *
-	 * This version uses a custom view for calculations, see the other overload of the function if you want to use the current view of the render-target.
-	 *
-	 * Params:
-	 * 		point	= Point to convert
-	 * 		view	= The view to use for converting the point
-	 *
-	 * Returns: The converted point, in target coordinates (pixels)
-	 */
-	Vector2i mapCoordsToPixel(Vector2f point, const(View) view) const
-	{
-		Vector2i temp;
-
-		sfRenderWindow_mapCoordsToPixel(sfPtr,point.x, point.y, &temp.x, &temp.y,view.sfPtr);
-
-		return temp;
-	}
-
-	/**
 	 * Restore the previously saved OpenGL render states and matrices.
 	 *
 	 * See the description of pushGLStates to get a detailed description of these functions.
@@ -904,26 +797,19 @@ WindowHandle sfRenderWindow_getSystemHandle(const sfRenderWindow* renderWindow);
 void sfRenderWindow_clear(sfRenderWindow* renderWindow, ubyte r, ubyte g, ubyte b, ubyte a);
 
 //Change the current active view of a render window
-void sfRenderWindow_setView(sfRenderWindow* renderWindow, const sfView* view);
+void sfRenderWindow_setView(sfRenderWindow* renderWindow, float centerX, float centerY, float sizeX,
+												float sizeY, float rotation, float viewportLeft, float viewportTop, float viewportWidth,
+												float viewportHeight);
 
 //Get the current active view of a render window
-sfView* sfRenderWindow_getView(const sfRenderWindow* renderWindow);
+void sfRenderWindow_getView(const sfRenderWindow* renderWindow, float* centerX, float* centerY, float* sizeX,
+												float* sizeY, float* rotation, float* viewportLeft, float* viewportTop, float* viewportWidth,
+												float* viewportHeight);
 
 //Get the default view of a render window
-sfView* sfRenderWindow_getDefaultView(const sfRenderWindow* renderWindow);
-
-//Get the viewport of a view applied to this target
-void sfRenderWindow_getViewport(const sfRenderWindow* renderWindow, const sfView* view, int* left, int* top, int* width, int* height);
-
-//Convert a point from window coordinates to world coordinates
-void sfRenderWindow_mapPixelToCoords(const sfRenderWindow* renderWindow, int xIn, int yIn, float* xOut, float* yOut, const sfView* targetView);
-
-//Convert a point from world coordinates to window coordinates
-void sfRenderWindow_mapCoordsToPixel(const sfRenderWindow* renderWindow, float xIn, float yIn, int* xOut, int* yOut, const sfView* targetView);
-
-//Draw a drawable object to the render-target
-//void sfRenderWindow_drawText(sfRenderWindow* renderWindow, const sfText* object, int blendMode,const float* transform, const sfTexture* texture, const sfShader* shader);
-
+void sfRenderWindow_getDefaultView(const sfRenderWindow* renderWindow, float* centerX, float* centerY, float* sizeX,
+												float* sizeY, float* rotation, float* viewportLeft, float* viewportTop, float* viewportWidth,
+												float* viewportHeight);
 
 //Draw primitives defined by an array of vertices to a render window
 void sfRenderWindow_drawPrimitives(sfRenderWindow* renderWindow,const (void)* vertices, uint vertexCount, int type, int colorSrcFactor, int colorDstFactor, int colorEquation,

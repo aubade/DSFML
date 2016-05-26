@@ -87,7 +87,16 @@ interface RenderTarget
 	 *
 	 * Returns: Viewport rectangle, expressed in pixels
 	 */
-	IntRect getViewport(const(View) view) const;
+	final IntRect getViewport(View view) const
+	{
+		float width = getSize().x;
+		float height = getSize().y;
+
+		return IntRect(cast(int)(0.5 + width * view.viewport.left),
+						cast(int)(0.5 + height * view.viewport.top),
+						cast(int)(0.5 + width * view.viewport.width),
+						cast(int)(0.5 + height * view.viewport.height));
+	}
 
 	/**
 	 * Clear the entire target with a single color.
@@ -128,7 +137,10 @@ interface RenderTarget
 	 *
 	 * Returns: The converted point, in "world" coordinates.
 	 */
-	Vector2f mapPixelToCoords(Vector2i point) const;
+	final Vector2f mapPixelToCoords(Vector2i point) const
+	{
+		return mapPixelToCoords(point, view);
+	}
 
 	/**
 	 * Convert a point from target coordinates to world coordinates.
@@ -147,10 +159,20 @@ interface RenderTarget
 	 *
 	 * Returns: The converted point, in "world" coordinates.
 	 */
-	Vector2f mapPixelToCoords(Vector2i point, const(View) view) const;
+	final Vector2f mapPixelToCoords(Vector2i point, View theView) const
+	{
+	    // First, convert from viewport coordinates to homogeneous coordinates
+		Vector2f normalized;
+
+		normalized.x = -1.0 + 2.0 * (cast(float)point.x - theView.viewport.left) / theView.viewport.width;
+		normalized.y = -1.0 + 2.0 * (cast(float)point.y - theView.viewport.top) / theView.viewport.height;
+
+	    // Then transform by the inverse of the view matrix
+		return view.getInverseTransform().transformPoint(normalized);
+	}
 
 	/**
-	 * Convert a point from target coordinates to world coordinates, using the current view.
+	 * Convert a point from target coordinates to world coordinates, using the curtheView.view.
 	 *
 	 * This function is an overload of the mapPixelToCoords function that implicitely uses the current view.
 	 *
@@ -159,7 +181,10 @@ interface RenderTarget
 	 *
 	 * The converted point, in "world" coordinates
 	 */
-	Vector2i mapCoordsToPixel(Vector2f point) const;
+	final Vector2i mapCoordsToPixel(Vector2f point) const
+	{
+		return mapCoordsToPixel(point, view);
+	}
 
 	/**
 	 * Convert a point from world coordinates to target coordinates.
@@ -176,7 +201,18 @@ interface RenderTarget
 	 *
 	 * Returns: The converted point, in target coordinates (pixels)
 	 */
-	Vector2i mapCoordsToPixel(Vector2f point, const(View) view) const;
+	final Vector2i mapCoordsToPixel(Vector2f point, View theView) const
+	{
+		// First, transform the point by the view matrix
+		Vector2f normalized = theView.getTransform().transformPoint(point);
+
+		// Then convert to viewport coordinates
+		Vector2i pixel;
+		pixel.x = cast(int)(( normalized.x + 1.0) / 2.0 * theView.viewport.width  + theView.viewport.left);
+		pixel.y = cast(int)((-normalized.y + 1.0) / 2.0 * theView.viewport.height + theView.viewport.top);
+
+		return pixel;
+	}
 
 	/**
 	 * Restore the previously saved OpenGL render states and matrices.
