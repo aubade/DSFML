@@ -64,8 +64,6 @@ class RenderTexture : RenderTarget
 	{
 		sfPtr = sfRenderTexture_construct();
 		m_texture = new Texture(sfRenderTexture_getTexture(sfPtr));
-		m_currentView = new View();
-		m_defaultView = new View();
 	}
 
 	~this()
@@ -94,13 +92,6 @@ class RenderTexture : RenderTarget
 
 		sfRenderTexture_create(sfPtr, width, height, depthBuffer);
 		err.write(dsfml.system.string.toString(sfErr_getOutput()));
-
-		//get view
-		m_currentView = new View(sfRenderTexture_getView(sfPtr));
-
-		//get default view
-		m_defaultView = new View(sfRenderTexture_getDefaultView(sfPtr));
-
 	}
 
 	/**
@@ -128,15 +119,29 @@ class RenderTexture : RenderTarget
 	 */
 	@property
 	{
-		override const(View) view(const(View) newView)
+		override View view(View newView)
 		{
-			sfRenderTexture_setView(sfPtr, newView.sfPtr);
-			m_currentView = new View(sfRenderTexture_getView(sfPtr));
-			return m_currentView;
+			sfRenderTexture_setView(sfPtr, newView.center.x, newView.center.y, newView.size.x, newView.size.y, newView.rotation,
+									newView.viewport.left, newView.viewport.top, newView.viewport.width, newView.viewport.height);
+			return newView;
 		}
-		override const(View) view() const
+		override View view() const
 		{
-			return m_currentView;
+			View currentView;
+
+			Vector2f currentCenter, currentSize;
+			float currentRotation;
+			FloatRect currentViewport;
+
+			sfRenderTexture_getView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
+									&currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
+
+			currentView.center = currentCenter;
+			currentView.size = currentSize;
+			currentView.rotation = currentRotation;
+			currentView.viewport = currentViewport;
+
+			return currentView;
 		}
 	}
 
@@ -147,9 +152,23 @@ class RenderTexture : RenderTarget
 	 *
 	 * Returns: The default view of the render target.
 	 */
-	const(View) getDefaultView() const // note: if refactored, change documentation of view property above
+	View getDefaultView() const // note: if refactored, change documentation of view property above
 	{
-		return m_defaultView;
+		View currentView;
+
+		Vector2f currentCenter, currentSize;
+		float currentRotation;
+		FloatRect currentViewport;
+
+		sfRenderTexture_getDefaultView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
+								&currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
+
+		currentView.center = currentCenter;
+		currentView.size = currentSize;
+		currentView.rotation = currentRotation;
+		currentView.viewport = currentViewport;
+
+		return currentView;
 	}
 
 	/**

@@ -68,8 +68,6 @@ class RenderWindow : Window, RenderTarget
 	this()
 	{
 		sfPtr = sfRenderWindow_construct();
-		m_currentView = new View();
-		m_defaultView = new View();
 		super(0);
 	}
 
@@ -143,15 +141,29 @@ class RenderWindow : Window, RenderTarget
 	 */
 	@property
 	{
-		const(View) view(const(View) newView)
+		override View view(View newView)
 		{
-			sfRenderWindow_setView(sfPtr, newView.sfPtr);
-			m_currentView = new View(sfRenderWindow_getView(sfPtr));
-			return m_currentView;
+			sfRenderWindow_setView(sfPtr, newView.center.x, newView.center.y, newView.size.x, newView.size.y, newView.rotation,
+									newView.viewport.left, newView.viewport.top, newView.viewport.width, newView.viewport.height);
+			return newView;
 		}
-		const(View) view() const
+		override View view() const
 		{
-			return m_currentView;
+			View currentView;
+
+			Vector2f currentCenter, currentSize;
+			float currentRotation;
+			FloatRect currentViewport;
+
+			sfRenderWindow_getView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
+									&currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
+
+			currentView.center = currentCenter;
+			currentView.size = currentSize;
+			currentView.rotation = currentRotation;
+			currentView.viewport = currentViewport;
+
+			return currentView;
 		}
 	}
 
@@ -162,9 +174,23 @@ class RenderWindow : Window, RenderTarget
 	 *
 	 * Returns: The default view of the render target.
 	 */
-	const(View) getDefaultView() const // note: if refactored, change documentation of view property above
+	View getDefaultView() const // note: if refactored, change documentation of view property above
 	{
-		return m_defaultView;
+		View currentView;
+
+		Vector2f currentCenter, currentSize;
+		float currentRotation;
+		FloatRect currentViewport;
+
+		sfRenderWindow_getDefaultView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
+								&currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
+
+		currentView.center = currentCenter;
+		currentView.size = currentSize;
+		currentView.rotation = currentRotation;
+		currentView.viewport = currentViewport;
+
+		return currentView;
 	}
 
 	/**
@@ -406,12 +432,6 @@ class RenderWindow : Window, RenderTarget
 		sfRenderWindow_createFromSettings(sfPtr, mode.width, mode.height, mode.bitsPerPixel, convertedTitle.ptr, convertedTitle.length, style, settings.depthBits, settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
 		err.write(dsfml.system.string.toString(sfErr_getOutput()));
 
-		//get view
-		m_currentView = new View(sfRenderWindow_getView(sfPtr));
-
-		//get default view
-		m_defaultView = new View(sfRenderWindow_getDefaultView(sfPtr));
-
 	}
 	///Create (or recreate) the window.
 	///
@@ -426,12 +446,6 @@ class RenderWindow : Window, RenderTarget
 		sfRenderWindow_createFromSettings(sfPtr, mode.width, mode.height, mode.bitsPerPixel, convertedTitle.ptr, convertedTitle.length, style, settings.depthBits, settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
 		err.write(dsfml.system.string.toString(sfErr_getOutput()));
 
-		//get view
-		m_currentView = new View(sfRenderWindow_getView(sfPtr));
-
-		//get default view
-		m_defaultView = new View(sfRenderWindow_getDefaultView(sfPtr));
-
 	}
 	///Create (or recreate) the window.
 	///
@@ -443,13 +457,6 @@ class RenderWindow : Window, RenderTarget
 		import dsfml.system.string;
 		sfRenderWindow_createFromSettings(sfPtr, mode.width, mode.height, mode.bitsPerPixel, title.ptr, title.length, style, settings.depthBits, settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
 		err.write(dsfml.system.string.toString(sfErr_getOutput()));
-
-		//get view
-		m_currentView = new View(sfRenderWindow_getView(sfPtr));
-
-		//get default view
-		m_defaultView = new View(sfRenderWindow_getDefaultView(sfPtr));
-
 	}
 
 	///Create (or recreate) the window from an existing control.
@@ -462,11 +469,6 @@ class RenderWindow : Window, RenderTarget
 		import dsfml.system.string;
 		sfRenderWindow_createFromHandle(sfPtr, handle, settings.depthBits,settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
 		err.write(dsfml.system.string.toString(sfErr_getOutput()));
-		//get view
-		m_currentView = new View(sfRenderWindow_getView(sfPtr));
-
-		//get default view
-		m_defaultView = new View(sfRenderWindow_getDefaultView(sfPtr));
 	}
 
 	/**

@@ -57,8 +57,8 @@ interface RenderTarget
 	 */
 	@property
 	{
-		const(View) view(const(View) newView);
-		const(View) view() const;
+		View view(View newView);
+		View view() const;
 	}
 
 	/**
@@ -68,7 +68,7 @@ interface RenderTarget
 	 *
 	 * Returns: The default view of the render target.
 	 */
-	const(View) getDefaultView() const; // note: if refactored, change documentation of view property above
+	View getDefaultView() const; // note: if refactored, change documentation of view property above
 
 	/**
 	 * Return the size of the rendering region of the target.
