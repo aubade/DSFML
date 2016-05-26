@@ -523,5 +523,4 @@ uint sfTexture_getMaximumSize();
 //Flush the OpenGL command buffer
 void sfTexture_flush();
 
-
 const(char)* sfErr_getOutput();
