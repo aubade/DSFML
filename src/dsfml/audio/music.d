@@ -21,8 +21,8 @@ module dsfml.audio.music;
 
 import core.time;
 
-import dsfml.system.mutex;
 import dsfml.system.inputstream;
+import dsfml.system.memory;
 
 import dsfml.audio.soundstream;
 
@@ -50,18 +50,16 @@ class Music : SoundStream
 		InputSoundFile m_file;
 		Duration m_duration;
 		short[] m_samples;
-		Mutex m_mutex;
 	}
 
 	this()
 	{
 		m_file.create();
 
-		m_mutex = new Mutex();
-
+		
 		super();
 	}
-
+	
 	/**
 	 * Open a music from an audio file.
 	 * 
@@ -146,6 +144,8 @@ class Music : SoundStream
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		stop();
+		destroy(m_file);
+		Memory.free(cast(void*)m_samples.ptr);
 	}
 
 	/// Get the total duration of the music.
@@ -169,14 +169,13 @@ class Music : SoundStream
 		 */
 		override bool onGetData(ref const(short)[] samples)
 		{
-			import dsfml.system.lock;
-
-			Lock lock = Lock(m_mutex);
-
-			auto length = cast(size_t)m_file.read(m_samples);
-			samples = m_samples[0..length];
-
-			return (samples.length == m_samples.length);
+			synchronized(this) {
+	
+				auto length = cast(size_t)m_file.read(m_samples);
+				samples = m_samples[0..length];
+	
+				return (samples.length == m_samples.length);
+			}	
 		}
 		/**
 		 * Change the current playing position in the stream source.
@@ -190,9 +189,9 @@ class Music : SoundStream
 		{
 			import dsfml.system.lock;
 
-			Lock lock = Lock(m_mutex);
-
-			m_file.seek(timeOffset.total!"usecs");
+			synchronized(this) {
+				m_file.seek(timeOffset.total!"usecs");
+			}	
 		}
 	}
 
@@ -221,7 +220,7 @@ class Music : SoundStream
 			m_duration = usecs(sampleCount * 1_000_000 / sampleRate / channelCount);
 			
 			// Resize the internal buffer so that it can contain 1 second of audio samples
-			m_samples.length = sampleRate * channelCount;
+			m_samples = Memory.resizeArray(m_samples, sampleRate * channelCount);
 
 			// Initialize the stream
 			super.initialize(channelCount, sampleRate);
