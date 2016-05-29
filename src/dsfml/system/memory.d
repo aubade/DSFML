@@ -41,19 +41,19 @@ struct Memory
 	private:
 	//These are technically static, but marked as nonstatic so their pointers are delegates. Saves us a phobos import.
 	
-	void* defaultalloc (size_t length, TypeInfo type = null) const
+	void* defaultalloc (size_t length, TypeInfo type = null) const nothrow @nogc
 	{
 		return malloc(length);
 	}
 	
-	void* defaultrealloc (void* object, size_t newlength, TypeInfo type = null) const
+	void* defaultrealloc (void* object, size_t newlength, TypeInfo type = null) const nothrow @nogc
 	{
 		if (newlength == 0) return null;
 		else if (object is null) return m_allocator(newlength);
 		else return .realloc(object, newlength);
 	}
 	
-	void defaultfree (void* object) const
+	void defaultfree (void* object) const nothrow @nogc
 	{
 		if (object is null) return;
 		
@@ -79,7 +79,7 @@ struct Memory
 	///
 	///Returns: a pointer to the block of memory
 	///
-	alias void* delegate(size_t length, TypeInfo type = null) AllocFunction;
+	alias nothrow @nogc void* delegate(size_t length, TypeInfo type = null) AllocFunction;
 
 	///Function or delegate to reallocate memory. Its existing contents must be preserved.
 	///
@@ -92,14 +92,14 @@ struct Memory
 	///
 	///Returns: the new pointer to the block of memory
 	///
-	alias void* delegate(void* object, size_t newlength, TypeInfo type = null) ReallocFunction;
+	alias nothrow @nogc void* delegate(void* object, size_t newlength, TypeInfo type = null) ReallocFunction;
 
 	///Function or delegate to allocate memory
 	///
 	///Params:
 	///     object - the data to be freed. If this is null nothing need be done with it.
 	///
-	alias void delegate (void* object) FreeFunction;
+	alias nothrow @nogc void delegate (void* object) FreeFunction;
 	
 	
 	///Changes the allocator function DSFML uses for its internal structures.
@@ -149,22 +149,22 @@ struct Memory
 		m_freer = &Memory.init.defaultfree;
 	}
 	
-	static void* alloc(size_t len, TypeInfo type = null)
+	static void* alloc(size_t len, TypeInfo type = null) nothrow @nogc 
 	{
 		return m_allocator (len, type);
 	}
 	
-	static void* realloc(void* obj, size_t len, TypeInfo type = null)
+	static void* realloc(void* obj, size_t len, TypeInfo type = null) nothrow @nogc 
 	{
 		return m_reallocator (obj, len, type);
 	}
 	
-	static void free (void* obj)
+	static void free (void* obj) nothrow @nogc 
 	{
 		m_freer (obj);		
 	}
 	
-	static T[] resizeArray (T)(ref T[] arr, size_t newlength) @trusted
+	static T[] resizeArray (T)(ref T[] arr, size_t newlength) nothrow @nogc @trusted
 	{
 		auto memsize = newlength * T.sizeof;
 		return arr = cast(T[])realloc(cast(void*)arr.ptr, newlength)[0..memsize]; 
