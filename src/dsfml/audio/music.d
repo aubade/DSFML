@@ -60,11 +60,6 @@ class Music : SoundStream
 		super();
 	}
 	
-	~this ()
-	{
-		Memory.free(cast(void*)m_samples.ptr);
-	}
-
 	/**
 	 * Open a music from an audio file.
 	 * 
@@ -150,6 +145,7 @@ class Music : SoundStream
 		mixin(destructorOutput);
 		stop();
 		destroy(m_file);
+		Memory.free(cast(void*)m_samples.ptr);
 	}
 
 	/// Get the total duration of the music.

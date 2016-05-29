@@ -56,8 +56,8 @@ class SoundBufferRecorder : SoundRecorder
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		destroy(m_buffer);
-		Memory.free(cast(void*)samples.ptr);
-		samples = null;
+		Memory.free(cast(void*)m_samples.ptr);
+		m_samples = null;
 	}
 	
 	/**

@@ -246,7 +246,7 @@ class Font
 		//fontTexture.sfPtr = sfFont_getTexture(sfPtr, characterSize);
 
        // writeln("returning texture");
-		return fontTexture;
+		return fontTexture.constReference;
 	}
 
 	/**

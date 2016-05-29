@@ -202,7 +202,6 @@ class SoundBuffer
 			err.write(dsfml.system.string.toString(sfErr_getOutput()));
 			return false;
 		}
-		destroy(obj);
 	}
 
 	/**

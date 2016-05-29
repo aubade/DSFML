@@ -60,7 +60,7 @@ class Texture
 		sfPtr = sfTexture_construct();
 	}
 
-	package this(sfTexture* texturePointer)
+	this(sfTexture* texturePointer)
 	{
 		sfPtr = texturePointer;
 	}

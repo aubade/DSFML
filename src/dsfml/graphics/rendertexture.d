@@ -34,6 +34,7 @@ import dsfml.graphics.shader;
 import dsfml.graphics.color;
 
 import dsfml.system.vector2;
+import dsfml.system.memory;
 
 
 import dsfml.system.err;
