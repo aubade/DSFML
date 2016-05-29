@@ -181,19 +181,19 @@ struct StaticObject(T) if (is(T == class))
 	Rebindable!T m_reference;
 			
 	
-	void emplace(Args...)(auto ref Args args) if (__traits(compiles, new T(args)))
+	void emplace(Args...)(auto ref Args args) if (__traits(compiles, new T(args))) 
 	{
 		if (m_reference !is null) destroy(m_reference);
 		
 		m_reference = .emplace!T(cast(void[])m_storage, args);
 	}
 	
-	@property T reference ()
+	@property T reference () @nogc pure @safe nothrow
 	{
 		return m_reference;
 	}
 	
-	@property const(T) constReference() const
+	@property const(T) constReference() const @nogc pure @safe nothrow
 	{
 		auto m = m_reference;
 		return m;
