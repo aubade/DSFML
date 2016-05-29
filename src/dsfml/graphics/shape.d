@@ -20,6 +20,7 @@ If you use this software in a product, an acknowledgment in the product document
 module dsfml.graphics.shape;
 
 import dsfml.system.vector2;
+import dsfml.system.memory;
 
 import dsfml.graphics.color;
 import dsfml.graphics.drawable;
@@ -65,8 +66,8 @@ class Shape : Drawable, Transformable
 
 	protected this()
 	{
-		m_vertices = new VertexArray(PrimitiveType.TrianglesFan,0);
-		m_outlineVertices = new VertexArray(PrimitiveType.TrianglesStrip,0);
+		m_vertices.emplace(PrimitiveType.TrianglesFan,0);
+		m_outlineVertices.emplace(PrimitiveType.TrianglesStrip,0);
 	}
 
 	private
@@ -76,10 +77,16 @@ class Shape : Drawable, Transformable
 		Color m_fillColor; /// Fill color
 		Color m_outlineColor; /// Outline color
 		float m_outlineThickness = 0; /// Thickness of the shape's outline
-		VertexArray m_vertices; /// Vertex array containing the fill geometry
-		VertexArray m_outlineVertices; /// Vertex array containing the outline geometry
+		StaticObject!VertexArray m_vertices; /// Vertex array containing the fill geometry
+		StaticObject!VertexArray m_outlineVertices; /// Vertex array containing the outline geometry
 		FloatRect m_insideBounds; /// Bounding rectangle of the inside (fill)
 		FloatRect m_bounds; /// Bounding rectangle of the whole shape (outline + fill)
+	}
+	
+	~this()
+	{
+		destroy (m_vertices);
+		destroy (m_outlineVertices);
 	}
 
 	/**

@@ -149,13 +149,20 @@ struct Memory
 		return m_allocator (len, type);
 	}
 	
-	static void* realloc(void* obj, size_t len, TypeInfo type = null) {
+	static void* realloc(void* obj, size_t len, TypeInfo type = null)
+	{
 		return m_reallocator (obj, len, type);
 	}
 	
 	static void free (void* obj)
 	{
 		m_freer (obj);		
+	}
+	
+	static T[] resizeArray (T)(ref T[] arr, size_t newlength) @trusted
+	{
+		auto memsize = newlength * T.sizeof;
+		return arr = cast(T[])realloc(cast(void*)arr.ptr, newlength)[0..memsize]; 
 	}
 }
 

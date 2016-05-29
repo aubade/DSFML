@@ -59,6 +59,11 @@ class Music : SoundStream
 		
 		super();
 	}
+	
+	~this ()
+	{
+		Memory.free(cast(void*)m_samples.ptr);
+	}
 
 	/**
 	 * Open a music from an audio file.
@@ -219,8 +224,7 @@ class Music : SoundStream
 			m_duration = usecs(sampleCount * 1_000_000 / sampleRate / channelCount);
 			
 			// Resize the internal buffer so that it can contain 1 second of audio samples
-			auto len = sampleRate * channelCount * short.sizeof;
-			m_samples = cast(short[])(Memory.realloc (cast(void*)m_samples.ptr, len)[0..len]);
+			m_samples = Memory.resizeArray(m_samples, sampleRate * channelCount);
 
 			// Initialize the stream
 			super.initialize(channelCount, sampleRate);

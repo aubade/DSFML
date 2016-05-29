@@ -41,6 +41,7 @@ struct InputSoundFile
 	~this()
 	{
 		sfInputSoundFile_destroy(m_soundFile);
+		destroy(m_stream);
 		m_soundFile = null;
 	}
 

@@ -55,6 +55,9 @@ class SoundBufferRecorder : SoundRecorder
 	{
 		import dsfml.system.config;
 		mixin(destructorOutput);
+		destroy(m_buffer);
+		Memory.free(cast(void*)samples.ptr);
+		samples = null;
 	}
 	
 	/**
@@ -93,8 +96,7 @@ class SoundBufferRecorder : SoundRecorder
 		override bool onProcessSamples(const(short)[] samples)
 		{
 			auto oldlen = m_samples.length;
-			auto newlen = (m_samples.length + samples.length) * short.sizeof;
-			m_samples = cast(short[])Memory.realloc(cast(void*)samples.ptr, newlen, typeid(short[]))[0 .. newlen];
+			m_samples = Memory.resizeArray(m_samples, m_samples.length + samples.length);
 			m_samples[oldlen..$] = samples[];
 			
 			return true;

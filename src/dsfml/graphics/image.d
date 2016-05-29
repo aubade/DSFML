@@ -23,6 +23,7 @@ import dsfml.system.vector2;
 
 import dsfml.graphics.color;
 import dsfml.system.inputstream;
+import dsfml.system.memory;
 
 import dsfml.graphics.rect;
 
@@ -154,12 +155,16 @@ class Image
 	bool loadFromStream(InputStream stream)
 	{
 		import dsfml.system.string;
+		StaticObject!imageStream obj;
+		obj.emplace(stream);
 
-		bool ret = sfImage_loadFromStream(sfPtr, new imageStream(stream));
+		bool ret = sfImage_loadFromStream(sfPtr, obj);
 		if(!ret)
 		{
 			err.write(dsfml.system.string.toString(sfErr_getOutput()));
 		}
+		
+		destroy(obj);
 
 		return ret;
 	}

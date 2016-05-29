@@ -57,13 +57,13 @@ import dsfml.system.err;
 class RenderTexture : RenderTarget
 {
 	package sfRenderTexture* sfPtr;
-	private Texture m_texture;
+	private StaticObject!Texture m_texture;
 	private View m_currentView, m_defaultView;
 
 	this()
 	{
 		sfPtr = sfRenderTexture_construct();
-		m_texture = new Texture(sfRenderTexture_getTexture(sfPtr));
+		m_texture.emplace(sfRenderTexture_getTexture(sfPtr));
 		m_currentView = new View();
 		m_defaultView = new View();
 	}
@@ -73,6 +73,7 @@ class RenderTexture : RenderTarget
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		sfRenderTexture_destroy(sfPtr);
+		destroy(m_texture);
 	}
 
 	/**

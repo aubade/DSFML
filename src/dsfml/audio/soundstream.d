@@ -70,6 +70,7 @@ class SoundStream:SoundSource
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		sfSoundStream_destroy(sfPtr);
+		destroy(callBacks);
 	}
 
 	protected void initialize(uint channelCount, uint sampleRate)
