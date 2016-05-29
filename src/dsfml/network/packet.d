@@ -22,6 +22,7 @@ module dsfml.network.packet;
 
 import std.traits;
 import std.range;
+import dsfml.system.memory;
 
 /**
  *Utility class to build blocks of data to transfer over the network.
@@ -67,7 +68,9 @@ class Packet
 	{
 		if(data != null && data.length > 0)
 		{
-			m_data ~= cast(ubyte[])data;
+			auto oldlen = m_data.length;
+			m_data = Memory.resizeArray(m_data, m_data.length + data.length);
+			m_data[oldlen..$] = cast(ubyte[])data[];
 		}
 	}
 
@@ -76,7 +79,8 @@ class Packet
 	///After calling Clear, the packet is empty.
 	void clear()
 	{
-		m_data.length = 0;
+		Memory.free (cast(void*)m_data.ptr);
+		m_data = null;
 		m_readPos = 0;
 		m_isValid = true;
 	}
