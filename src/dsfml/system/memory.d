@@ -171,7 +171,7 @@ struct Memory
 		if (newptr is null) //make sure we don't slice a null pointer.
 			return arr = null;
 		else 
-			arr = cast(T[])newptr[0..memsize]; 
+			return arr = cast(T[])newptr[0..memsize]; 
 	}
 }
 
