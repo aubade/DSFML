@@ -66,6 +66,11 @@ struct Memory
 	
 	public:
 	
+	static this()
+	{
+		reset();
+	}
+	
 	///Function or delegate to allocate memory
 	///
 	///Params:
