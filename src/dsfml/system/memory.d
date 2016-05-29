@@ -204,6 +204,8 @@ struct StaticObject(T) if (is(T == class))
 		return m;
 	}
 	
+	@disable this(this);
+	
 	~this()
 	{
 		if (m_reference !is null) destroy(m_reference);
