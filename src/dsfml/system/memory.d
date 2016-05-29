@@ -167,7 +167,11 @@ struct Memory
 	static T[] resizeArray (T)(ref T[] arr, size_t newlength) nothrow @nogc @trusted
 	{
 		auto memsize = newlength * T.sizeof;
-		return arr = cast(T[])realloc(cast(void*)arr.ptr, newlength)[0..memsize]; 
+		auto newptr = realloc(cast(void*)arr.ptr, newlength);
+		if (newptr is null) //make sure we don't slice a null pointer.
+			return arr = null;
+		else 
+			arr = cast(T[])newptr[0..memsize]; 
 	}
 }
 

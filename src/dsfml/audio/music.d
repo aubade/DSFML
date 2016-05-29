@@ -220,7 +220,9 @@ class Music : SoundStream
 			m_duration = usecs(sampleCount * 1_000_000 / sampleRate / channelCount);
 			
 			// Resize the internal buffer so that it can contain 1 second of audio samples
+			auto oldlen = m_samples.length;
 			m_samples = Memory.resizeArray(m_samples, sampleRate * channelCount);
+			if (oldlen < m_samples.length) m_samples[oldlen..$] = short.init;
 
 			// Initialize the stream
 			super.initialize(channelCount, sampleRate);

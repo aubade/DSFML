@@ -56,8 +56,9 @@ class ConvexShape : Shape
 	{
 		uint pointCount(uint newPointCount)
 		{
-			auto newlength = newPointCount * Vector2f.sizeof;
-			m_points = Memory.resizeArray(m_points, newlength);
+			auto oldlen = m_points.length;
+			m_points = Memory.resizeArray(m_points, newPointCount);
+			if (oldlen < m_points.length) m_points[oldlen..$] = Vector2f.init;
 			update();
 			return newPointCount;
 		}

@@ -185,6 +185,7 @@ class VertexArray : Drawable
 	 */
 	void resize(uint length)
 	{
+		auto oldlen = Vertices.length;
 		if (length <= capacity)
 			Vertices = Vertices.ptr[0..length];
 		else
@@ -192,7 +193,8 @@ class VertexArray : Drawable
 			Vertices = Memory.resizeArray(Vertices, length);
 			capacity = length;
 			owned = true;
-		}	
+		}
+		if (oldlen < Vertices.length) Vertices[oldlen..$] = Vertex.init;
 	}
 
 	ref Vertex opIndex(size_t index)
