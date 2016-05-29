@@ -285,7 +285,7 @@ void initialize()
 {
 
 	//Setting up our aa with our lists of files because GDC crashes when searching for them at runtime
-	fileList["system"] = ["clock.d", "config.d", "err.d", "inputstream.d", "lock.d", "mutex.d", "package.d", "sleep.d", "string.d", "thread.d", "vector2.d", "vector3.d"];
+	fileList["system"] = ["clock.d", "config.d", "err.d", "inputstream.d", "lock.d", "memory.d", "mutex.d", "package.d", "sleep.d", "string.d", "thread.d", "vector2.d", "vector3.d"];
 	fileList["audio"] = ["listener.d", "music.d", "package.d", "sound.d", "soundbuffer.d", "soundbufferrecorder.d", "inputsoundfile.d", "outputsoundfile.d", "soundrecorder.d", "soundsource.d", "soundstream.d"];
 	fileList["network"] = ["ftp.d", "http.d", "ipaddress.d", "package.d", "packet.d", "socket.d", "socketselector.d", "tcplistener.d", "tcpsocket.d", "udpsocket.d"];
 	fileList["window"] = ["context.d", "contextsettings.d", "event.d", "joystick.d", "keyboard.d", "mouse.d", "sensor.d", "touch.d", "package.d", "videomode.d", "window.d", "windowhandle.d"];

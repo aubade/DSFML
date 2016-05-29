@@ -20,6 +20,8 @@ If you use this software in a product, an acknowledgment in the product document
 ///A module containing the Mutex class used by DSFML.
 module dsfml.system.mutex;
 
+import dsfml.system.memory;
+
 import core = core.sync.mutex;
 
 /**
@@ -35,12 +37,12 @@ import core = core.sync.mutex;
  */
 class Mutex
 {
-	private core.Mutex m_mutex;
+	private StaticObject!(core.Mutex) m_mutex;
 
 	///Default Constructor
 	this()
 	{
-		m_mutex = new core.Mutex();
+		m_mutex.emplace();
 	}
 
 	//Destructor
@@ -48,6 +50,7 @@ class Mutex
 	{
 		import dsfml.system.config;
 		mixin(destructorOutput);
+		destroy(m_mutex);
 	}
 
 	///Lock the mutex

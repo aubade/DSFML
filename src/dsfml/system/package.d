@@ -27,6 +27,7 @@ public
 	import dsfml.system.err;
 	import dsfml.system.inputstream;
 	import dsfml.system.lock;
+	import dsfml.system.memory;
 	import dsfml.system.mutex;
 	import dsfml.system.sleep;
 	import dsfml.system.thread;
