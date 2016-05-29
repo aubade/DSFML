@@ -65,8 +65,6 @@ class RenderTexture : RenderTarget
 	{
 		sfPtr = sfRenderTexture_construct();
 		m_texture.emplace(sfRenderTexture_getTexture(sfPtr));
-		m_currentView = new View();
-		m_defaultView = new View();
 	}
 
 	~this()
