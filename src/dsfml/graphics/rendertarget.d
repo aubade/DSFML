@@ -205,3 +205,19 @@ interface RenderTarget
 	 */
 	void resetGLStates();
 }
+
+/**
+ * Draws a generic drawable structure to the render target, usable through UFCS.
+ * 
+ * Params:
+ *		target		= RenderTarget to draw to
+ * 		drawable	= Object to draw
+ * 		states		= Render states to use for drawing
+ */
+
+void draw(T)(RenderTarget target, auto ref T drawable, RenderStates states = RenderStates.init)
+	//TODO: A better template constraint would be preferrable here. This is very brute force. 
+	if (__traits(compiles, T.init.draw(RenderTarget.init, RenderStates.init)))
+{
+	drawable.draw(target, states);
+}
