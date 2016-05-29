@@ -22,6 +22,8 @@ module dsfml.audio.soundbufferrecorder;
 import dsfml.audio.soundrecorder;
 import dsfml.audio.soundbuffer;
 
+import dsfml.system.memory;
+
 
 /++
  + Specialized SoundRecorder which stores the captured audio data into a sound buffer.
@@ -40,13 +42,13 @@ class SoundBufferRecorder : SoundRecorder
 	private
 	{
 		short[] m_samples;
-		SoundBuffer m_buffer;
+		StaticObject!SoundBuffer m_buffer;
 	}
 	
 	this()
 	{
 		// Constructor code
-		m_buffer = new SoundBuffer();
+		m_buffer.emplace();
 	}
 	
 	~this()
@@ -64,7 +66,7 @@ class SoundBufferRecorder : SoundRecorder
 	 */
 	const(SoundBuffer) getBuffer() const
 	{
-		return m_buffer;
+		return m_buffer.constReference;
 	}
 	
 	protected
@@ -73,8 +75,9 @@ class SoundBufferRecorder : SoundRecorder
 		/// Returns: True to start the capture, or false to abort it
 		override bool onStart()
 		{
-			m_samples.length = 0;
-			m_buffer = new SoundBuffer();
+			Memory.free(m_samples.ptr);
+			m_samples = null;
+			m_buffer.emplace();
 			
 			return true;
 		}
@@ -89,7 +92,10 @@ class SoundBufferRecorder : SoundRecorder
 		 */
 		override bool onProcessSamples(const(short)[] samples)
 		{
-			m_samples ~= samples;
+			auto oldlen = m_samples.length;
+			auto newlen = (m_samples.length + samples.length) * short.sizeof;
+			m_samples = cast(short[])Memory.realloc(cast(void*)samples.ptr, newlen, typeid(short[]))[0 .. newlen];
+			m_samples[oldlen..$] = samples[];
 			
 			return true;
 		}

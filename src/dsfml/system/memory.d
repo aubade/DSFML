@@ -18,6 +18,7 @@ If you use this software in a product, an acknowledgment in the product document
 */
 
 ///A module for controlling DSFML's internal memory allocation.AARange
+module dsfml.system.memory;
 
 import core.stdc.stdlib;
 
@@ -45,27 +46,25 @@ struct Memory
 		return malloc(length);
 	}
 	
-	void* defaultrealloc (ref void* object, size_t newlength, TypeInfo type = null) const
+	void* defaultrealloc (void* object, size_t newlength, TypeInfo type = null) const
 	{
-		if (newlength == 0) return object = null;
-		else if (object is null) return allocator(newlength);
-		else return object = realloc(object, newlength);
+		if (newlength == 0) return null;
+		else if (object is null) return m_allocator(newlength);
+		else return .realloc(object, newlength);
 	}
 	
-	void defaultfree (ref void* object) const
+	void defaultfree (void* object) const
 	{
 		if (object is null) return;
 		
-		free(object);
-		object = null;
+		.free (object);
 	}
 
-	static AllocFunction allocator;
-	static ReallocFunction reallocator;
-	static FreeFunction freer;
+	static AllocFunction m_allocator;
+	static ReallocFunction m_reallocator;
+	static FreeFunction m_freer;
 	
 	public:
-	
 	
 	///Function or delegate to allocate memory
 	///
@@ -81,21 +80,21 @@ struct Memory
 	///
 	///Params:
 	///		object - pointer to the block of memory being reallocated. If this is null a new block
-	///              must be allocated from scratch.
+	///              must be allocated from scratch. The original pointer must be discarded after the call.
 	///  	newlength - the new size of the memory block required in bytes. If this is zero,
 	///			     	the block should be deallocated entirely and null should be returned.
 	///     type - the typeid() of the data this memory will be used for.
 	///
 	///Returns: the new pointer to the block of memory
 	///
-	alias void* delegate(ref void* object, size_t newlength, TypeInfo type = null) ReallocFunction;
+	alias void* delegate(void* object, size_t newlength, TypeInfo type = null) ReallocFunction;
 
 	///Function or delegate to allocate memory
 	///
 	///Params:
 	///     object - the data to be freed. If this is null nothing need be done with it.
 	///
-	alias void delegate (ref void* object) FreeFunction;
+	alias void delegate (void* object) FreeFunction;
 	
 	
 	///Changes the allocator function DSFML uses for its internal structures.
@@ -107,7 +106,7 @@ struct Memory
 	{
 		if (newAllocator is null) throw new Exception("Attempted to set null memory allocator");
 		
-		allocator = newAllocator;
+		m_allocator = newAllocator;
 	}	
 
 	///Changes the allocator function DSFML uses for its internal structures.
@@ -119,7 +118,7 @@ struct Memory
 	{
 		if (newReallocator is null) throw new Exception("Attempted to set null memory reallocator");
 		
-		reallocator = newReallocator;
+		m_reallocator = newReallocator;
 	}	
 
 	///Changes the allocator function DSFML uses for its internal structures.
@@ -131,7 +130,7 @@ struct Memory
 	{
 		if (newFreer is null) throw new Exception("Attempted to set null memory freer");
 		
-		freer = newFreer;
+		m_freer = newFreer;
 	}	
 
 	///Resets all memory-related functions to their defaults
@@ -140,9 +139,23 @@ struct Memory
 	///Your program WILL crash.
 
 	static void reset() {
-		allocator = &Memory.init.defaultalloc;
-		reallocator = &Memory.init.defaultrealloc;
-		freer = &Memory.init.defaultfree;
+		m_allocator = &Memory.init.defaultalloc;
+		m_reallocator = &Memory.init.defaultrealloc;
+		m_freer = &Memory.init.defaultfree;
+	}
+	
+	static void* alloc(size_t len, TypeInfo type = null)
+	{
+		return m_allocator (len, type);
+	}
+	
+	static void* realloc(void* obj, size_t len, TypeInfo type = null) {
+		return m_reallocator (obj, len, type);
+	}
+	
+	static void free (void* obj)
+	{
+		m_freer (obj);		
 	}
 }
 
@@ -157,24 +170,33 @@ struct StaticObject(T) if (is(T == class))
 {
 	//We use an array of size_t to ensure that the memory will be aligned to the arch's word size.
 	//The math ensures that it will always round up. 
-	private size_t[(__traits(classInstanceSize, T) + size_t.sizeof - 1) / size_t.sizeof] m_storage;
+	private size_t[(__traits(classInstanceSize, T) + T.alignof + size_t.sizeof - 1) / size_t.sizeof] m_storage;
 	Rebindable!T m_reference;
+			
 	
 	void emplace(Args...)(auto ref Args args) if (__traits(compiles, new T(args)))
 	{
 		if (m_reference !is null) destroy(m_reference);
 		
-		m_reference = std.conv.emplace!T(cast(void[])m_storage, args);
+		m_reference = .emplace!T(cast(void[])m_storage, args);
 	}
 	
 	@property T reference ()
 	{
 		return m_reference;
-	} 
+	}
+	
+	@property const(T) constReference() const
+	{
+		auto m = m_reference;
+		return m;
+	}
 	
 	~this()
 	{
 		if (m_reference !is null) destroy(m_reference);
 		m_reference = null;
 	}
+	
+	alias reference this;
 }

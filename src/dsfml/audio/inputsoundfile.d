@@ -22,13 +22,16 @@ module dsfml.audio.inputsoundfile;
 import std.string;
 import dsfml.system.inputstream;
 import dsfml.system.err;
+import dsfml.system.memory;
 
 package:
 
 struct InputSoundFile
 {
 	private sfInputSoundFile* m_soundFile;
-	private soundFileStream m_stream;//keeps an instance of the C++ interface stored if used
+	private StaticObject!soundFileStream m_stream;//keeps an instance of the C++ interface stored if used
+	
+	@disable this(this);
 
 	void create()
 	{
@@ -38,6 +41,7 @@ struct InputSoundFile
 	~this()
 	{
 		sfInputSoundFile_destroy(m_soundFile);
+		m_soundFile = null;
 	}
 
 	bool openFromFile(const(char)[] filename)
@@ -58,7 +62,7 @@ struct InputSoundFile
 	bool openFromStream(InputStream stream)
 	{
 		import dsfml.system.string;
-		m_stream = new soundFileStream(stream);
+		m_stream.emplace(stream);
 
 		bool toReturn  = sfInputSoundFile_openFromStream(m_soundFile, m_stream);
 		err.write(toString(sfErr_getOutput()));
@@ -104,10 +108,6 @@ struct InputSoundFile
 	{
 		return sfInputSoundFile_getChannelCount(m_soundFile);
 	}
-
-
-
-
 }
 
 private
