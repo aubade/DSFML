@@ -510,6 +510,17 @@ unittest
 	}
 }
 
+unittest
+{
+	auto ftp = new Ftp();
+	
+	auto dir = ftp.getWorkingDirectory();
+	assert (dir.isOK);
+	assert (dir.getDirectory == "MOCKDIRECTORY");
+	assert (dir.getMessage == "MOCKDIRECTORYMESSAGE");
+	assert (dir.getStatus == Ftp.DirectoryResponse.Status.DirectoryOk);
+}
+
 private extern(C):
 
 version (unittest)
@@ -745,10 +756,10 @@ version (unittest)
 		assert (ftp.isInitialized);
 		
 		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.login);
-		response.userName = userName;
-		response.userNameLength = userNameLength;
-		response.password = password;
-		response.passwordLength = passwordLength;
+		response.name1 = userName;
+		response.nameLength = userNameLength;
+		response.name2 = password;
+		response.name2Length = passwordLength;
 		
 		return response;
 	}
@@ -802,8 +813,8 @@ version (unittest)
 		assert (ftp.isInitialized);
 		
 		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.changeDirectory);
-		response.name = directory;
-		response.nameLength = length;
+		response.name1 = directory;
+		response.name1Length = length;
 		
 		return response;
 	}	
@@ -827,8 +838,8 @@ version (unittest)
 		assert (ftp.isInitialized);
 		
 		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.createDirectory);
-		response.name = name;
-		response.nameLength = length;
+		response.name1 = name;
+		response.name1Length = length;
 		
 		return response;
 	}	
@@ -842,8 +853,8 @@ version (unittest)
 		assert (ftp.isInitialized);
 		
 		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.deleteDirectory);
-		response.name = name;
-		response.nameLength = length;
+		response.name1 = name;
+		response.name1Length = length;
 		
 		return response;
 	}	
@@ -857,9 +868,9 @@ version (unittest)
 		
 		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.renameFile);
 		response.name = file;
-		response.nameLength = fileLength;
-		response.newName = newName;
-		response.newNameLength = newNameLength;
+		response.name1Length = fileLength;
+		response.name2 = newName;
+		response.name2Length = newNameLength;
 		
 		return response;
 	}	
@@ -873,21 +884,60 @@ version (unittest)
 		assert (ftp.isInitialized);
 		
 		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.deleteFile);
-		response.name = name;
-		response.nameLength = length;
+		response.name1 = name;
+		response.name1Length = length;
 		
 		return response;
 	}	
 	
 	///Download a file from a FTP server
-	sfFtpResponse* sfFtp_download(sfFtp* ftp, const(char)* distantFile, size_t distantFileLength, const(char)* destPath, size_t destPathLength, int mode);
-	
+	sfFtpResponse* sfFtp_download(sfFtp* ftp, const(char)* distantFile, size_t distantFileLength, const(char)* destPath, size_t destPathLength, int mode)
+	{
+		assert (ftp !is null);
+		assert (!ftp.isDestroyCalled);
+		assert (ftp.isInitialized);
+		
+		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.download);
+		response.name = distantFile;
+		response.name1Length = distantFileLength;
+		response.name2 = destPath;
+		response.name2Length = destPathLength;
+		response.mode = mode;
+		
+		return response;
+	}	
 	
 	///Upload a file to a FTP server
-	sfFtpResponse* sfFtp_upload(sfFtp* ftp, const(char)* localFile, size_t localFileLength, const(char)* destPath, size_t destPathLength, int mode);
-	
+	sfFtpResponse* sfFtp_upload(sfFtp* ftp, const(char)* localFile, size_t localFileLength, const(char)* destPath, size_t destPathLength, int mode)
+	{
+		assert (ftp !is null);
+		assert (!ftp.isDestroyCalled);
+		assert (ftp.isInitialized);
+		
+		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.upload);
+		response.name = localFile;
+		response.name1Length = localFileLength;
+		response.name2 = destPath;
+		response.name2Length = destPathLength;
+		response.mode = mode;
+		
+		return response;
+	}	
 	///Send a command to a FTP server
-	sfFtpResponse* sfFtp_sendCommand(sfFtp* ftp, const(char)* command, size_t commandLength, const(char)* parameter, size_t parameterLength);
+	sfFtpResponse* sfFtp_sendCommand(sfFtp* ftp, const(char)* command, size_t commandLength, const(char)* parameter, size_t parameterLength)
+	{
+		assert (ftp !is null);
+		assert (!ftp.isDestroyCalled);
+		assert (ftp.isInitialized);
+		
+		auto response = new sfFtpResponse(true, false, ftp, sfFtpResponse.Command.sendCommand);
+		response.name = command;
+		response.name1Length = commandLength;
+		response.name2 = parameter;
+		response.name2Length = parameterLength;
+		
+		return response;
+	}	
 
 }
 else
