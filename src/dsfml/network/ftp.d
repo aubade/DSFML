@@ -512,13 +512,19 @@ unittest
 
 unittest
 {
+	import std.stdio;
+	
+	writeln("Testing FTP");
 	auto ftp = new Ftp();
 	
+	writeln("Testing Directory Response.");
 	auto dir = ftp.getWorkingDirectory();
 	assert (dir.isOK);
 	assert (dir.getDirectory == "MOCKDIRECTORY");
 	assert (dir.getMessage == "MOCKDIRECTORYMESSAGE");
 	assert (dir.getStatus == Ftp.DirectoryResponse.Status.DirectoryOk);
+	
+	writeln("Testing Directory Listing.");
 }
 
 private extern(C):
