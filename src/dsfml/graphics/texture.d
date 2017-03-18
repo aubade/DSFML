@@ -29,7 +29,6 @@ import dsfml.window.window;
 import dsfml.system.inputstream;
 import dsfml.system.vector2;
 import dsfml.system.err;
-import dsfml.system.memory;
 
 /++
  + Image living on the graphics card that can be used for drawing.
@@ -60,7 +59,7 @@ class Texture
 		sfPtr = sfTexture_construct();
 	}
 
-	this(sfTexture* texturePointer)
+	package this(sfTexture* texturePointer)
 	{
 		sfPtr = texturePointer;
 	}
@@ -120,7 +119,7 @@ class Texture
 	bool loadFromMemory(const(void)[] data, IntRect area = IntRect())
 	{
 		import dsfml.system.string;
-		
+
 
 		bool ret = sfTexture_loadFromMemory(sfPtr, data.ptr, data.length,area.left, area.top,area.width, area.height);
 		if(!ret)
@@ -149,15 +148,12 @@ class Texture
 	bool loadFromStream(InputStream stream, IntRect area = IntRect())
 	{
 		import dsfml.system.string;
-		StaticObject!textureStream obj;
-		obj.emplace(stream);
 
-		bool ret = sfTexture_loadFromStream(sfPtr, obj, area.left, area.top,area.width, area.height);
+		bool ret = sfTexture_loadFromStream(sfPtr, new textureStream(stream), area.left, area.top,area.width, area.height);
 		if(!ret)
 		{
 			err.write(dsfml.system.string.toString(sfErr_getOutput()));
 		}
-		destroy(obj);
 
 		return ret;
 	}

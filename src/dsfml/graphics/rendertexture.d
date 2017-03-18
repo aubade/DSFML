@@ -34,7 +34,6 @@ import dsfml.graphics.shader;
 import dsfml.graphics.color;
 
 import dsfml.system.vector2;
-import dsfml.system.memory;
 
 
 import dsfml.system.err;
@@ -58,13 +57,13 @@ import dsfml.system.err;
 class RenderTexture : RenderTarget
 {
 	package sfRenderTexture* sfPtr;
-	private StaticObject!Texture m_texture;
+	private Texture m_texture;
 	private View m_currentView, m_defaultView;
 
 	this()
 	{
 		sfPtr = sfRenderTexture_construct();
-		m_texture.emplace(sfRenderTexture_getTexture(sfPtr));
+		m_texture = new Texture(sfRenderTexture_getTexture(sfPtr));
 	}
 
 	~this()
@@ -72,7 +71,6 @@ class RenderTexture : RenderTarget
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		sfRenderTexture_destroy(sfPtr);
-		destroy(m_texture);
 	}
 
 	/**

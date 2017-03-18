@@ -33,7 +33,6 @@ import dsfml.graphics.renderstates;
 import dsfml.graphics.primitivetype;
 
 import dsfml.system.vector2;
-import dsfml.system.memory;
 
 import std.typecons: Rebindable;
 
@@ -73,7 +72,7 @@ class Text : Drawable, Transformable
 		uint m_characterSize;
 		Style m_style;
 		Color m_color;
-		StaticObject!VertexArray m_vertices;
+		VertexArray m_vertices;
 		FloatRect m_bounds;
 
 		//used for caching the font texture
@@ -87,7 +86,7 @@ class Text : Drawable, Transformable
 		m_characterSize = 30;
 		m_style = Style.Regular;
 		m_color = Color(255,255,255);
-		m_vertices.emplace(PrimitiveType.Quads,0);
+		m_vertices = new VertexArray(PrimitiveType.Quads,0);
 		m_bounds = FloatRect();
 	}
 
@@ -100,7 +99,7 @@ class Text : Drawable, Transformable
 		m_characterSize = characterSize;
 		m_style = Style.Regular;
 		m_color = Color(255,255,255);
-		m_vertices.emplace(PrimitiveType.Quads,0);
+		m_vertices = new VertexArray(PrimitiveType.Quads,0);
 		m_bounds = FloatRect();
 		m_font = font;
 		updateGeometry();
@@ -110,7 +109,6 @@ class Text : Drawable, Transformable
 	{
 		import dsfml.system.config;
 		mixin(destructorOutput);
-		destroy(m_vertices);
 	}
 
 	/**

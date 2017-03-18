@@ -28,8 +28,6 @@ import dsfml.system.vector2;
 import dsfml.system.vector3;
 import dsfml.system.err;
 
-import dsfml.system.memory;
-
 
 /++
  + Shader class (vertex and fragment).
@@ -219,24 +217,19 @@ class Shader
 		import dsfml.system.string;
 
 		bool ret;
-		
-		StaticObject!shaderStream obj;
 
 		if(type == Type.Vertex)
 		{
-			obj.emplace(stream);
-			ret = sfShader_loadFromStream(sfPtr, obj , null);
+			ret = sfShader_loadFromStream(sfPtr, new shaderStream(stream) , null);
 		}
 		else
 		{
-			obj.emplace(stream);
-			ret = sfShader_loadFromStream(sfPtr, null , obj);
+			ret = sfShader_loadFromStream(sfPtr, null , new shaderStream(stream));
 		}
 		if(!ret)
 		{
 			err.write(dsfml.system.string.toString(sfErr_getOutput()));
 		}
-		destroy(obj);
 
 		return ret;
 	}
@@ -255,17 +248,12 @@ class Shader
 	bool loadFromStream(InputStream vertexShaderStream, InputStream fragmentShaderStream)
 	{
 		import dsfml.system.string;
-		StaticObject!shaderStream vobj, fobj;
-		vobj.emplace(vertexShaderStream);
-		fobj.emplace(fragmentShaderStream);
 
-		bool ret = sfShader_loadFromStream(sfPtr, vobj, fobj);
+		bool ret = sfShader_loadFromStream(sfPtr, new shaderStream(vertexShaderStream), new shaderStream(fragmentShaderStream));
 		if(!ret)
 		{
 			err.write(dsfml.system.string.toString(sfErr_getOutput()));
 		}
-		destroy(vobj);
-		destroy(fobj);
 		return ret;
 	}
 

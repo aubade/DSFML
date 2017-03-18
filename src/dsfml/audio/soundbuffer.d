@@ -25,7 +25,6 @@ import dsfml.audio.inputsoundfile;
 import dsfml.audio.sound;
 
 import dsfml.system.inputstream;
-import dsfml.system.memory;
 
 import std.stdio;
 
@@ -189,10 +188,7 @@ class SoundBuffer
 	 */
 	bool loadFromStream(InputStream stream)
 	{
-		StaticObject!SoundBufferStream obj;
-		scope(exit) destroy(obj);
-		obj.emplace(stream);
-		if(sfSoundBuffer_loadFromStream(sfPtr, obj))
+		if(sfSoundBuffer_loadFromStream(sfPtr, new SoundBufferStream(stream)))
 		{
 			return true;
 		}

@@ -23,7 +23,6 @@ import dsfml.graphics.texture;
 import dsfml.graphics.glyph;
 import dsfml.system.inputstream;
 import dsfml.system.err;
-import dsfml.system.memory;
 
 /++
  + Class for loading and manipulating character fonts.
@@ -44,20 +43,20 @@ class Font
 {
 	package sfFont* sfPtr;
 
-	private StaticObject!Texture fontTexture;
-	private StaticObject!fontStream m_stream;//keeps an instance of the C++ stream stored if used
+	private Texture fontTexture;
+	private fontStream m_stream;//keeps an instance of the C++ stream stored if used
 
 	/// Defines an empty font
 	this()
 	{
 		sfPtr = sfFont_construct();
-		fontTexture.emplace(sfFont_getTexturePtr(sfPtr));
+		fontTexture = new Texture(sfFont_getTexturePtr(sfPtr));
 	}
 
 	package this(sfFont* newFont)
 	{
 		sfPtr = newFont;
-		fontTexture.emplace(sfFont_getTexturePtr(sfPtr));
+		fontTexture = new Texture(sfFont_getTexturePtr(sfPtr));
 	}
 
 	~this()
@@ -65,8 +64,6 @@ class Font
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		sfFont_destroy(sfPtr);
-		destroy(fontTexture);
-		destroy(m_stream);
 	}
 
 	/**
@@ -129,7 +126,7 @@ class Font
 	{
 		import dsfml.system.string;
 
-		m_stream.emplace(stream);
+		m_stream = new fontStream(stream);
 
 		bool ret = sfFont_loadFromStream(sfPtr, m_stream);
 
@@ -246,7 +243,7 @@ class Font
 		//fontTexture.sfPtr = sfFont_getTexture(sfPtr, characterSize);
 
        // writeln("returning texture");
-		return fontTexture.constReference;
+		return fontTexture;
 	}
 
 	/**

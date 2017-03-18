@@ -27,7 +27,6 @@ import dsfml.graphics.rendertarget;
 import dsfml.graphics.renderstates;
 
 import dsfml.system.vector2;
-import dsfml.system.memory;
 
 /++
  + Define a set of one or more 2D primitives.
@@ -54,30 +53,23 @@ class VertexArray : Drawable
 	 */
 	PrimitiveType primitiveType;
 	private Vertex[] Vertices;
-	size_t capacity;
-	bool owned = true;
 
 	this(PrimitiveType type, uint vertexCount)
 	{
 		primitiveType = type;
-		
-		Vertices = Memory.resizeArray(Vertices, vertexCount);
-		capacity = vertexCount;
+		Vertices = new Vertex[vertexCount];
 	}
 	
 	private this(PrimitiveType type, Vertex[] vertices)
 	{
 		primitiveType = type;
 		Vertices = vertices;
-		capacity = vertices.length;
-		owned = false;
 	}
 	
 	~this()
 	{
 		import dsfml.system.config;
 		mixin(destructorOutput);
-		if(owned) Memory.free(cast(void*)Vertices.ptr);
 	}
 
 	/**
@@ -140,14 +132,7 @@ class VertexArray : Drawable
 	 */
 	void append(Vertex newVertex)
 	{
-		if (Vertices.length < capacity)
-			Vertices = Vertices.ptr[0..Vertices.length + 1];
-		else
-		{	
-			Vertices = Memory.resizeArray(Vertices, Vertices.length + 1);
-			capacity = Vertices.length;
-			owned = true;
-		}	
+		Vertices ~= newVertex;
 	}
 
 	/**
@@ -157,7 +142,7 @@ class VertexArray : Drawable
 	 */
 	void clear()
 	{
-		Vertices = Vertices.ptr[0..0];
+		Vertices.length = 0;
 	}
 
 	/**
@@ -185,14 +170,7 @@ class VertexArray : Drawable
 	 */
 	void resize(uint length)
 	{
-		if (length <= capacity)
-			Vertices = Vertices.ptr[0..length];
-		else
-		{	
-			Vertices = Memory.resizeArray(Vertices, length);
-			capacity = length;
-			owned = true;
-		}	
+		Vertices.length = length;
 	}
 
 	ref Vertex opIndex(size_t index)

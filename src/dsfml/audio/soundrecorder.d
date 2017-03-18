@@ -23,7 +23,6 @@ import core.thread;
 import core.time;
 import dsfml.system.string;
 import dsfml.system.err;
-import dsfml.system.memory;
 
 
 /++
@@ -52,13 +51,13 @@ import dsfml.system.memory;
 class SoundRecorder
 {
 	package sfSoundRecorder* sfPtr;
-	private StaticObject!SoundRecorderCallBacks callBacks;
+	private SoundRecorderCallBacks callBacks;
 
 
 	protected this()
 	{
 		import dsfml.system.string;
-		callBacks.emplace(this);
+		callBacks = new SoundRecorderCallBacks(this);
 		sfPtr = sfSoundRecorder_construct(callBacks);
 
 		err.write(dsfml.system.string.toString(sfErr_getOutput()));
@@ -78,7 +77,6 @@ class SoundRecorder
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		sfSoundRecorder_destroy(sfPtr);
-		destroy(callBacks);
 	}
 
 	/**

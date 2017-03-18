@@ -29,8 +29,6 @@ import dsfml.system.vector3;
 
 import dsfml.system.err;
 
-import dsfml.system.memory;
-
 
 /++
  + Abstract base class for streamed audio sources.
@@ -57,11 +55,11 @@ class SoundStream:SoundSource
 
 	package sfSoundStream* sfPtr;
 
-	private StaticObject!SoundStreamCallBacks callBacks;
+	private SoundStreamCallBacks callBacks;
 
 	protected this()
 	{
-	    callBacks.emplace(this);
+	    callBacks = new SoundStreamCallBacks(this);
 		sfPtr = sfSoundStream_construct(callBacks);
 	}
 
@@ -70,7 +68,6 @@ class SoundStream:SoundSource
 		import dsfml.system.config;
 		mixin(destructorOutput);
 		sfSoundStream_destroy(sfPtr);
-		destroy(callBacks);
 	}
 
 	protected void initialize(uint channelCount, uint sampleRate)

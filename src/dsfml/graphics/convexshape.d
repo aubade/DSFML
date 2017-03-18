@@ -19,7 +19,6 @@ If you use this software in a product, an acknowledgment in the product document
 
 module dsfml.graphics.convexshape;
 
-import dsfml.system.memory;
 import dsfml.system.vector2;
 import dsfml.graphics.shape;
 
@@ -48,7 +47,6 @@ class ConvexShape : Shape
 	{
 		import dsfml.system.config;
 		mixin(destructorOutput);
-		Memory.free(cast(void*)m_points.ptr);
 	}
 
 	/// The number of points on the polygon
@@ -56,8 +54,7 @@ class ConvexShape : Shape
 	{
 		uint pointCount(uint newPointCount)
 		{
-			auto newlength = newPointCount * Vector2f.sizeof;
-			m_points = Memory.resizeArray(m_points, newlength);
+			m_points.length = newPointCount;
 			update();
 			return newPointCount;
 		}
@@ -107,8 +104,7 @@ class ConvexShape : Shape
 	 */
 	void addPoint(Vector2f point)
 	{
-		m_points = Memory.resizeArray(m_points, m_points.length + 1);
-		m_points[$-1] = point;
+		m_points ~=point;
 		update();
 	}
 }
