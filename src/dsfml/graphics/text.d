@@ -86,7 +86,7 @@ class Text : Drawable, Transformable
 		m_characterSize = 30;
 		m_style = Style.Regular;
 		m_color = Color(255,255,255);
-		m_vertices = new VertexArray(PrimitiveType.Quads,0);
+		m_vertices = new VertexArray(PrimitiveType.Triangles,0);
 		m_bounds = FloatRect();
 	}
 
@@ -99,7 +99,7 @@ class Text : Drawable, Transformable
 		m_characterSize = characterSize;
 		m_style = Style.Regular;
 		m_color = Color(255,255,255);
-		m_vertices = new VertexArray(PrimitiveType.Quads,0);
+		m_vertices = new VertexArray(PrimitiveType.Triangles,0);
 		m_bounds = FloatRect();
 		m_font = font;
 		updateGeometry();
@@ -416,9 +416,11 @@ private:
 				float bottom = top + underlineThickness;
 
 				m_vertices.append(Vertex(Vector2f(0, top), m_color, Vector2f(1, 1)));
-				m_vertices.append(Vertex(Vector2f(x, top), m_color, Vector2f(1, 1)));
-				m_vertices.append(Vertex(Vector2f(x, bottom), m_color, Vector2f(1, 1)));
 				m_vertices.append(Vertex(Vector2f(0, bottom), m_color, Vector2f(1, 1)));
+				m_vertices.append(Vertex(Vector2f(x, bottom), m_color, Vector2f(1, 1)));
+				m_vertices.append(Vertex(Vector2f(x, top), m_color, Vector2f(1, 1)));
+				m_vertices.append(Vertex(Vector2f(0, top), m_color, Vector2f(1, 1)));
+				m_vertices.append(Vertex(Vector2f(x, bottom), m_color, Vector2f(1, 1)));
 			}
 
 			// Handle special characters
@@ -461,9 +463,11 @@ private:
 
 			// Add a quad for the current character
 			m_vertices.append(Vertex(Vector2f(x + left - italic * top, y + top), m_color, Vector2f(u1, v1)));
-			m_vertices.append(Vertex(Vector2f(x + right - italic * top, y + top), m_color, Vector2f(u2, v1)));
-			m_vertices.append(Vertex(Vector2f(x + right - italic * bottom, y + bottom), m_color, Vector2f(u2, v2)));
 			m_vertices.append(Vertex(Vector2f(x + left - italic * bottom, y + bottom), m_color, Vector2f(u1, v2)));
+			m_vertices.append(Vertex(Vector2f(x + right - italic * bottom, y + bottom), m_color, Vector2f(u2, v2)));
+			m_vertices.append(Vertex(Vector2f(x + right - italic * top, y + top), m_color, Vector2f(u2, v1)));
+			m_vertices.append(Vertex(Vector2f(x + left - italic * top, y + top), m_color, Vector2f(u1, v1)));
+			m_vertices.append(Vertex(Vector2f(x + right - italic * bottom, y + bottom), m_color, Vector2f(u2, v2)));
 
 			// Update the current bounds
 			minX = min(minX, x + left - italic * bottom);
@@ -482,9 +486,11 @@ private:
 			float bottom = top + underlineThickness;
 
 			m_vertices.append(Vertex(Vector2f(0, top), m_color, Vector2f(1, 1)));
-			m_vertices.append(Vertex(Vector2f(x, top), m_color, Vector2f(1, 1)));
-			m_vertices.append(Vertex(Vector2f(x, bottom), m_color, Vector2f(1, 1)));
 			m_vertices.append(Vertex(Vector2f(0, bottom), m_color, Vector2f(1, 1)));
+			m_vertices.append(Vertex(Vector2f(x, bottom), m_color, Vector2f(1, 1)));
+			m_vertices.append(Vertex(Vector2f(x, top), m_color, Vector2f(1, 1)));
+			m_vertices.append(Vertex(Vector2f(0, top), m_color, Vector2f(1, 1)));
+			m_vertices.append(Vertex(Vector2f(x, bottom), m_color, Vector2f(1, 1)));
 		}
 
 		// Update the bounding rectangle

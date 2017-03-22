@@ -199,7 +199,7 @@ class Sprite : Drawable, Transformable
 		{
 			renderStates.transform *= getTransform();
 			renderStates.texture = m_texture;
-			renderTarget.draw(m_vertices, PrimitiveType.Quads, renderStates);
+			renderTarget.draw(m_vertices, PrimitiveType.TrianglesFan, renderStates);
 		}
 	}
 
